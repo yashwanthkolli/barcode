@@ -14,14 +14,7 @@
     <h1 class="text-center text-uppercase fs-2 fw-semibold">Title</h1>
 
     {% include 'info.html' %}
-
-    <form action="" method=POST>
-        {% csrf_token %}
-
-        {{ form.as_p }}
-
-        <input type="submit" value="Submit" class="btn btn-secondary" />
-    </form>
+    
     {%  include 'barcodeTable.html' %}
 
     <hr>

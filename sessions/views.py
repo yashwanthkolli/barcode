@@ -4,15 +4,13 @@ from .forms import SessionsForm
 
 # Create your views here.
 def home(req):
+    issue_no = None
     submitted = False
+    form = SessionsForm()
     if req.method == "POST":
         form = SessionsForm(req.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/?submitted=True')
+            issue_no = form.save().Issue_No
 
-    else:
-        if 'submitted' in req.GET:
-            submitted = True
-
-    return render(req, 'home.html', {'form': SessionsForm})
+    return render(req, 'home.html', {'form': form, 'issue_no': issue_no})

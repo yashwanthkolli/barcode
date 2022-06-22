@@ -1,52 +1,39 @@
-<form class="row g-3">
+<form class="row g-3" action="" method=POST>
+    {% csrf_token %}
     <div class="col">
-        <div class="row mb-3 justify-content-center">
-            <label for="name" class="col-sm-2 col-form-label">Engineer Name</label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" id="name">
-            </div>
-        </div>
 
+        {% for field in form.visible_fields|slice:"0:4" %}
         <div class="row mb-3 justify-content-center">
-            <label for="jobNo" class="col-sm-2 col-form-label">Job Number</label>
+            <label for="name" class="col-sm-2 col-form-label">{{ field.label }}</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control" id="jobNo">
+                {{field}}
+                
             </div>
         </div>
+        {% endfor %}
 
-        <div class="row mb-3 justify-content-center">
-            <label for="vessel" class="col-sm-2 col-form-label">Vessel/Cust</label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" id="vessel">
-            </div>
-        </div>
-
-        <div class="row mb-3 justify-content-center">
-            <label for="port" class="col-sm-2 col-form-label">Port Name</label>
-            <div class="col-sm-5">
-                <input type="text" class="form-control" id="port">
-            </div>
-        </div>
     </div>
     <div class="col">
+
         <div class="row mb-3 justify-content-center">
             <label for="issueNo" class="col-sm-2 col-form-label">Issue No.</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control" id="issueNo" disabled readonly>
+                <input type="text" class="form-control" id="issueNo" value={{ issue_no }} disabled readonly>
             </div>
         </div>
 
+        {% for field in form.visible_fields|slice:"4:" %}
         <div class="row mb-3 justify-content-center">
-            <label for="issueDate" class="col-sm-2 col-form-label">Issue Date</label>
+            <label for="name" class="col-sm-2 col-form-label">{{ field.label }}</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control" id="issueDate">
+                {{field}}
             </div>
         </div>
+        {% endfor %}
 
         <div class="row mb-3 justify-content-center">
-            <label for="equipment" class="col-sm-2 col-form-label">Equipment</label>
             <div class="col-sm-5">
-                <input type="text" class="form-control" id="equipment">
+                <input type="submit" value="Submit" class="btn btn-secondary" />
             </div>
         </div>
     </div>
