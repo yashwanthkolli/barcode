@@ -11,16 +11,21 @@
 <body>
     {% include 'navbar.html' %}
 
-    <h1 class="text-center text-uppercase fs-2 fw-semibold">Title</h1>
+    <h1 class="text-center text-uppercase fs-2 fw-semibold">Barcode</h1>
 
     {% include 'info.html' %}
     
     {%  include 'barcodeTable.html' %}
 
+    <button class="btn btn-success" id="generateBtn">Generate PDF</button>
+
     <hr>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+    <script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script>
         const table=document.getElementById("table");
@@ -54,6 +59,39 @@
         }
         
         input.addEventListener('change',onChanegFunction)
+    
+        const issueNo = document.getElementById('issueNo')
+        const generateBtn = document.getElementById('generateBtn')
+
+        function CreatePDFfromHTML() {
+            if(issueNo.value !== 'None') {
+                var HTML_Width = $("body").height() * 0.707;
+                var HTML_Height = $("body").height() / 2;
+                var top_left_margin = 0;
+                var PDF_Width = HTML_Width + (top_left_margin * 2);
+                var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
+                var canvas_image_width = HTML_Width;
+                var canvas_image_height = HTML_Height;
+
+                var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
+
+                html2canvas($("body")[0]).then(function (canvas) {
+                    var imgData = canvas.toDataURL("image/jpeg", 1.0);
+                    var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
+                    pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
+                    for (var i = 1; i <= totalPDFPages; i++) { 
+                        pdf.addPage(PDF_Width, PDF_Height);
+                        pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
+                    }
+                    pdf.save("session"+ issueNo.value +".pdf");
+                    // $("body").hide();
+                });
+            } else {
+                alert('Create a Session')
+            }
+        }
+
+        generateBtn.addEventListener('click', CreatePDFfromHTML)
     </script>
 
 </body>
