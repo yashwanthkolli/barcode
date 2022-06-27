@@ -20,6 +20,41 @@
     <hr>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
+
+    <script>
+        const table=document.getElementById("table");
+        let input = document.getElementsByClassName('barcodeInput')[document.getElementsByClassName('barcodeInput').length - 1]
+
+        const onChanegFunction = async () => {
+            if(input.value.length){
+                let barcodeInfo = {}
+                await fetch('http://127.0.0.1:8000/get/'+input.value)
+                .then(res => res.json())
+                .then(data => barcodeInfo = data)
+                .catch(err => console.log(err))
+
+                if(barcodeInfo.message === 'success') {
+                    const currentRow = table.children[table.children.length - 1].children
+                    currentRow[1].innerHTML = barcodeInfo.barcodenumber
+                    currentRow[2].innerHTML = barcodeInfo.product_name
+                    currentRow[3].innerHTML = barcodeInfo.item_number
+                    currentRow[4].innerHTML = barcodeInfo.item_number
+                    currentRow[5].innerHTML = '1'
+
+                    const newRow = table.insertRow()
+                    newRow.classList.add("d-flex")
+                    newRow.innerHTML = '<th class="col-1" scope="row">' + table.children.length + '</th><td class="col-2"><input type="text" class="barcodeInput" /></td><td class="col-6"></td><td class="col-1"></td><td class="col-1"></td><td class="col-1"></td>'
+                    input = document.getElementsByClassName('barcodeInput')[document.getElementsByClassName('barcodeInput').length - 1]
+                    input.onchange = onChanegFunction
+                } else {
+                    alert('Enter Valid Barcode')
+                }
+            } 
+        }
+        
+        input.addEventListener('change',onChanegFunction)
+    </script>
+
 </body>
 </html>
