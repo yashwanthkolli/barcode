@@ -14,7 +14,7 @@
     <h1 class="text-center text-uppercase fs-2 fw-semibold">Barcode</h1>
 
     {% include 'info.html' %}
-    
+
     {%  include 'barcodeTable.html' %}
 
     <button class="btn btn-success" id="generateBtn">Generate PDF</button>
@@ -23,11 +23,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
     <script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script>
+        const barcodesArray = []
         const table=document.getElementById("table");
         let input = document.getElementsByClassName('barcodeInput')[document.getElementsByClassName('barcodeInput').length - 1]
 
@@ -46,6 +48,7 @@
                     currentRow[3].innerHTML = barcodeInfo.item_number
                     currentRow[4].innerHTML = barcodeInfo.item_number
                     currentRow[5].innerHTML = '1'
+                    barcodesArray.push([table.children.length, barcodeInfo.barcodenumber, barcodeInfo.product_name, barcodeInfo.item_number, barcodeInfo.item_number, '1'])
 
                     const newRow = table.insertRow()
                     newRow.classList.add("d-flex")
@@ -65,27 +68,32 @@
 
         function CreatePDFfromHTML() {
             if(issueNo.value !== 'None') {
-                var HTML_Width = $("body").height() * 0.707;
-                var HTML_Height = $("body").height() / 2.4;
-                var top_left_margin = 0;
-                var PDF_Width = HTML_Width + (top_left_margin * 2);
-                var PDF_Height = (PDF_Width * 1.5) + (top_left_margin * 2);
-                var canvas_image_width = HTML_Width;
-                var canvas_image_height = HTML_Height;
-
-                var totalPDFPages = Math.ceil(HTML_Height / PDF_Height) - 1;
-
-                html2canvas($("body")[0]).then(function (canvas) {
-                    var imgData = canvas.toDataURL("image/jpeg", 1.0);
-                    var pdf = new jsPDF('p', 'pt', [PDF_Width, PDF_Height]);
-                    pdf.addImage(imgData, 'JPG', top_left_margin, top_left_margin, canvas_image_width, canvas_image_height);
-                    for (var i = 1; i <= totalPDFPages; i++) { 
-                        pdf.addPage(PDF_Width, PDF_Height);
-                        pdf.addImage(imgData, 'JPG', top_left_margin, -(PDF_Height*i)+(top_left_margin*4),canvas_image_width,canvas_image_height);
-                    }
-                    pdf.save("session"+ issueNo.value +".pdf");
-                    // $("body").hide();
-                });
+                const doc = new jsPDF()
+                doc.text('Address', 190, 10, "right");
+                doc.text("Logo", 20, 10, "left");
+                doc.setFontSize(10);
+                doc.text("Name", 16, 25, "left")
+                doc.text(document.getElementById('id_Name').value, 62, 25, "left")
+                doc.text("Job Number", 16, 32, "left")
+                doc.text(document.getElementById('id_Job_No').value, 62, 32, "left")
+                doc.text("Vessel/Cust", 16, 40, "left")
+                doc.text(document.getElementById('id_Vessel').value, 62, 40, "left")
+                doc.text("Port Name", 16, 48, "left")
+                doc.text(document.getElementById('id_Port_Name').value, 62, 48, "left")
+                doc.text("Issue Number", 137, 25, "left")
+                doc.text(document.getElementById('id_Name').value, 183, 25, "left")
+                doc.text("Equipment", 137, 32, "left")
+                doc.text(document.getElementById('id_Equipment').value, 183, 32, "left")
+                doc.text("Issue Date", 137, 40, "left")
+                doc.text(document.getElementById('id_Issue_Date').value, 183, 40, "left")
+                
+                doc.autoTable({
+                    head: [['#', 'Barcode', 'Description', 'Part No.', 'Serial No.', 'Quantity']],
+                    body: barcodesArray,
+                    margin: { top: 60 },
+                })
+                doc.save('table.pdf')
+                console.log(doc)
             } else {
                 alert('Create a Session')
             }
