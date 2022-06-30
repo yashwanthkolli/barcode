@@ -1,5 +1,9 @@
 # Barcode Reader
 
+A simple django application where you can add the barcode numbers and get 
+complete details of the product and make a pdf containing the list of entered 
+barcodes. 
+
 ## Setup
 
 The first thing to do is to clone the repository:
