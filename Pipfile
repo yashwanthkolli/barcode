@@ -10,6 +10,8 @@ mysqlclient = "*"
 djangorestframework = "*"
 pandas = "*"
 statistics = "*"
+psycopg2-binary = "*"
+python-decouple = "*"
 
 [dev-packages]
 
